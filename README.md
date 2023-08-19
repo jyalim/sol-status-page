@@ -8,7 +8,7 @@ and python scripts via `crontab`:
 
     * * * * * /packages/public/sol-node-status/get-sol-node-status.sh &> /packages/public/sol-node-status/crontab.diag
 
-Current version is available from [rcstatus][rcstatus].
+Live on Open OnDemand page ([Sol status][sol-status], for ASU users).
 
 Shell script will only save every tenth `zstd -19` compressed comma-separated
 value (csv) files (every ten minutes). This is determined by an incremented
@@ -91,4 +91,4 @@ Changes
 
 
 
-[rcstatus]: https://rcstatus.asu.edu/jyalim/sol.html
+[sol-status]: https://links.asu.edu/sol-status
