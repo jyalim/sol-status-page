@@ -34,6 +34,9 @@ symbolically linking the html file:
         /packages/public/sol-node-status/sol.html ->
         ood*:/var/www/ood/public
 
+and provisioning the content as shown in the `provisioning/` directory.
+The main change to the status application was to include the status html
+page as an iframe (with an associated legend).
 
 Debugging
 ---------
