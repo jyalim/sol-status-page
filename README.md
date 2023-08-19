@@ -1,25 +1,6 @@
 Sol Node Status
 ===============
 
-Scrapes SLURM via `sinfo` and plots node status with `plotly`.
-
-On Sol's `admin.sol.rc.asu.edu`, the user `software` runs the generating shell
-and python scripts via `crontab`:
-
-    * * * * * /packages/public/sol-node-status/get-sol-node-status.sh &> /packages/public/sol-node-status/crontab.diag
-
-Live on Open OnDemand page ([Sol status][sol-status], for ASU users).
-
-Shell script will only save every tenth `zstd -19` compressed comma-separated
-value (csv) files (every ten minutes). This is determined by an incremented
-counter that is stored in `snapshot/.snapshot_modulo.do.not.delete`. When there
-are errors, the `zstd` file will not be generated and `csv`s will not be
-removed. This is to help determine what occurred in the data and catch all edge
-cases.
-
-Open OnDemand
--------------
-
 <div float="center">
  <p align="center"> 
   <img 
@@ -37,7 +18,7 @@ and python scripts via `crontab`:
 
     * * * * * /packages/public/sol-node-status/get-sol-node-status.sh &> /packages/public/sol-node-status/crontab.diag
 
-Live on Open OnDemand page ([Sol status][sol-status]).
+Live on Open OnDemand page ([Sol status][sol-status], for ASU users).
 
 Shell script will only save every tenth `zstd -19` compressed comma-separated
 value (csv) files (every ten minutes). This is determined by an incremented
@@ -45,6 +26,14 @@ counter that is stored in `snapshot/.snapshot_modulo.do.not.delete`. When there
 are errors, the `zstd` file will not be generated and `csv`s will not be
 removed. This is to help determine what occurred in the data and catch all edge
 cases.
+
+The final html page is made available to the OOD nodes through Salt
+symbolically linking the html file:
+
+    admin:/srv/salt/sol/states/cluster/ood/apps/status/status.sls
+        /packages/public/sol-node-status/sol.html ->
+        ood*:/var/www/ood/public
+
 
 Debugging
 ---------
