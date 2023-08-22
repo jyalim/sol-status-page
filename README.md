@@ -1,7 +1,11 @@
 Sol Node Status
 ===============
 <div float="left">
-  <a href="https://math.la.asu.edu/~yalim/sol-status-demo.html">
+  <a 
+    href="https://math.la.asu.edu/~yalim/sol-status-demo.html"
+    target="_blank"
+    rel="noreferrer noopener"
+  >
    <img 
      width="20%" 
      src="assets/view-demo.png" 
@@ -12,7 +16,11 @@ Sol Node Status
 
 <div float="center">
  <p align="center"> 
-  <a href="https://math.la.asu.edu/~yalim/sol-status-demo.html">
+  <a 
+    href="https://math.la.asu.edu/~yalim/sol-status-demo.html"
+    target="_blank"
+    rel="noreferrer noopener"
+  >
    <img 
      width="95%" 
      src="assets/anim.gif" 
@@ -30,7 +38,7 @@ and python scripts via `crontab`:
     * * * * * /packages/public/sol-node-status/get-sol-node-status.sh &> /packages/public/sol-node-status/crontab.diag
 
 Live on Open OnDemand page ([Sol status][sol-status], for ASU users); a
-snapshot demonstration is available 
+demonstration (of a system snapshot) is available 
 [here, on my personal website][example].
 
 Shell script will only save every tenth `zstd -19` compressed comma-separated
