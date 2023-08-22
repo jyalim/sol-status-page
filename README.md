@@ -3,7 +3,7 @@ Sol Node Status
 <div float="left">
   <a href="https://math.la.asu.edu/~yalim/sol-status-demo.html">
    <img 
-     width="10%" 
+     width="30px" 
      src="assets/view-demo.png" 
      alt="A button that links to a demo of the status page." 
    >
