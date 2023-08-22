@@ -1,0 +1,28 @@
+<html>
+<div style="display:block">
+<p style="text-align:center">
+  <iframe
+    src="assets/sol.html"
+    width="100%"
+    height="900px"
+    frameBorder="0"
+  ></iframe>
+</p>
+</div>
+<div style="display:block; text-align:center; max-width:500px; margin: auto; border: 2px solid #aee; box-shadow: 7px 7px 7px #AAA; background: #dff;">
+<p style="text-align:left; margin: 5px;">
+  <strong>Key</strong>: the squares above illustrate distinct compute nodes
+  and their status on the Sol supercomputer. A square's color reflects the
+  node's <a href="https://slurm.schedmd.com/sinfo.html#SECTION_NODE-STATE-CODES">
+  state</a> as labeled by the legend in the upper-right. Hovering the mouse
+  over a square will provide additional details about that compute node, such
+  as
+  <a href="https://slurm.schedmd.com/sbatch.html#OPT_constraint"> features (job constraints)</a>,
+  <a href="https://slurm.schedmd.com/sbatch.html#OPT_partition"> partition info</a>, and
+  <a href="https://slurm.schedmd.com/sbatch.html#OPT_qos"> QOS info</a>.
+  Some nodes have Graphical Processing Units (GPUs), which are indicated as
+  idle or allocated by an empty (○) or filled (●) symbol.
+</p>
+</div>
+<div style="padding-bottom:50px;"></div>
+</html>
