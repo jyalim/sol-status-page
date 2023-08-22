@@ -1,13 +1,24 @@
 Sol Node Status
 ===============
+<div float="left">
+  <a href="https://math.la.asu.edu/~yalim/sol-status-demo.html">
+   <img 
+     width="10%" 
+     src="assets/view-demo.png" 
+     alt="A button that links to a demo of the status page." 
+   >
+  </a>
+</div>
 
 <div float="center">
  <p align="center"> 
-  <img 
-    width="95%" 
-    src="assets/anim.gif" 
-    alt="Animation over April 4, 2023 of the Sol cluster's node utilization." 
-  >
+  <a href="https://math.la.asu.edu/~yalim/sol-status-demo.html">
+   <img 
+     width="95%" 
+     src="assets/anim.gif" 
+     alt="Animation over April 4, 2023 of the Sol cluster's node utilization. Clicking on the image links to a demo page." 
+   >
+  </a>
  </p>
 </div>
 
@@ -18,7 +29,9 @@ and python scripts via `crontab`:
 
     * * * * * /packages/public/sol-node-status/get-sol-node-status.sh &> /packages/public/sol-node-status/crontab.diag
 
-Live on Open OnDemand page ([Sol status][sol-status], for ASU users).
+Live on Open OnDemand page ([Sol status][sol-status], for ASU users); a
+snapshot demonstration is available 
+[here, on my personal website][example].
 
 Shell script will only save every tenth `zstd -19` compressed comma-separated
 value (csv) files (every ten minutes). This is determined by an incremented
@@ -81,31 +94,7 @@ Changes
    0.0   | 2022-11-03 | Proof of concept
 
 
-<div style="display:block">
-<p style="text-align:center">
-  <iframe
-    src="assets/sol.html"
-    width="100%"
-    height="900px"
-    frameBorder="0"
-  ></iframe>
-</p>
-</div>
-<div style="display:block; text-align:center; max-width:500px; margin: auto; border: 2px solid #aee; box-shadow: 7px 7px 7px #AAA; background: #dff;">
-<p style="text-align:left; margin: 5px;">
-  <strong>Key</strong>: the squares above illustrate distinct compute nodes
-  and their status on the Sol supercomputer. A square's color reflects the
-  node's <a href="https://slurm.schedmd.com/sinfo.html#SECTION_NODE-STATE-CODES">
-  state</a> as labeled by the legend in the upper-right. Hovering the mouse
-  over a square will provide additional details about that compute node, such
-  as
-  <a href="https://slurm.schedmd.com/sbatch.html#OPT_constraint"> features (job constraints)</a>,
-  <a href="https://slurm.schedmd.com/sbatch.html#OPT_partition"> partition info</a>, and
-  <a href="https://slurm.schedmd.com/sbatch.html#OPT_qos"> QOS info</a>.
-  Some nodes have Graphical Processing Units (GPUs), which are indicated as
-  idle or allocated by an empty (○) or filled (●) symbol.
-</p>
-</div>
-<div style="padding-bottom:50px;"></div>
+
 
 [sol-status]: https://links.asu.edu/sol-status
+[example]: https://math.la.asu.edu/~yalim/sol-status-demo.html
