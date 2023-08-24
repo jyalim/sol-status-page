@@ -106,5 +106,6 @@ Changes
 
 
 
+[sol-repo]: https://github.com/asu-ke/sol
 [sol-status]: https://links.asu.edu/sol-status
 [example]: https://math.la.asu.edu/~yalim/sol-status-demo.html
