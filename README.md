@@ -30,7 +30,9 @@ Sol Node Status
  </p>
 </div>
 
-Scrapes SLURM via `sinfo` and plots node status with `plotly`.
+Scrapes SLURM via `sinfo` and plots node status with `plotly`.  See the
+rest of our public Sol stack and information about the Sol supercomputer
+by visiting our official [Sol github repository][sol-repo].
 
 On Sol's `admin.sol.rc.asu.edu`, the user `software` runs the generating shell
 and python scripts via `crontab`:
