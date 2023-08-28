@@ -43,6 +43,11 @@ Live on Open OnDemand page ([Sol status][sol-status], for ASU users); a
 demonstration (of a system snapshot) is available 
 [here, on my personal website][example].
 
+A script to recreate the python environment with `mamba`/`conda` is
+provided: `python-env.sh`. The status page really depends on `pandas`,
+`numpy`, and `plotly`, but the general python environment for scientific
+computing is provided.
+
 Shell script will only save every tenth `zstd -19` compressed comma-separated
 value (csv) files (every ten minutes). This is determined by an incremented
 counter that is stored in `snapshot/.snapshot_modulo.do.not.delete`. When there
