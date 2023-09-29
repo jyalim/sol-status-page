@@ -51,9 +51,9 @@ computing is provided.
 Shell script will only save every tenth `zstd -19` compressed comma-separated
 value (csv) files (every ten minutes). This is determined by an incremented
 counter that is stored in `snapshot/.snapshot_modulo.do.not.delete`. When there
-are errors, the `zstd` file will not be generated and `csv`s will not be
-removed. This is to help determine what occurred in the data and catch all edge
-cases.
+are errors the `zstd` file will not be generated and `csv`s will not be
+removed. This is to help determine what occurred in the data and catch
+all edge cases.
 
 The final html page is made available to the OOD nodes through Salt
 symbolically linking the html file:
