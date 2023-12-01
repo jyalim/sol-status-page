@@ -97,7 +97,8 @@ Changes
 
  Version | Date       | Notes
 :-------:|:----------:|:-------------------------------------------------------
- CURRENT | 2023-05-01 | version 0.8
+ CURRENT | 2023-12-01 | version 0.9
+   0.9   | 2023-12-01 | Improved sinfo state support
    0.8   | 2023-05-01 | MIG support 
    0.7   | 2023-02-03 | NHC support (escaping quotes in node status REASON)
    0.6   | 2023-01-15 | GRES socket info bug, due to new `sinfo` reporting
