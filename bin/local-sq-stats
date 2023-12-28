@@ -9,6 +9,10 @@ squeue -S "P,t,-p" -O "${sq_fmt_str}" "$@" \
     } 
     return q
   } 
+  BEGIN {
+    s["R"]=0
+    s["PD"]=0
+  }
   NR > 1 { 
     user=$2
     state=$5

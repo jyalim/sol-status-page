@@ -97,7 +97,8 @@ Changes
 
  Version | Date       | Notes
 :-------:|:----------:|:-------------------------------------------------------
- CURRENT | 2023-12-01 | version 0.9
+ CURRENT | 2023-12-28 | version 0.9.1
+   0.9.1 | 2023-12-28 | Fixed minor bug in job stats when a cluster is jobless
    0.9   | 2023-12-01 | Improved sinfo state support
    0.8   | 2023-05-01 | MIG support 
    0.7   | 2023-02-03 | NHC support (escaping quotes in node status REASON)
