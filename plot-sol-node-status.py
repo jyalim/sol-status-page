@@ -82,7 +82,7 @@ def mig_disk(mig_bounds=[0,1,2,3,4,5,6,7], alloc_mig=[], center=np.r_[0,0], radi
   OUTPUTS
   -------
   pdisk, string :: a raw string of draw-instructions and coordinates that
-  plotly infers to draw the pie-disk and the wedges.
+  plotly infers to draw the pie-disk.
 
   psegs, string :: a raw string of draw-instructions and coordinates that 
   plotly infers to draw the ALLOCATED pie-segments.
