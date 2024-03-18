@@ -1,12 +1,13 @@
 #!/packages/envs/scicomp/bin/python
 """
-VERSION: 0.8
+VERSION: 0.10.1
 BLAME: Jason <yalim@asu.edu>
 """
 import plotly
 import plotly.express as px
 import pandas as pd
 import numpy as np
+import re
 import sys
 
 datafile = sys.argv[1]
@@ -33,7 +34,7 @@ COLS=[
   'CPU_LOAD',
   'AVAIL_FEATURES',
   'SPECIAL',
-  'gpu_str',
+  'gpu_info',
 ]
 
 gpu_status_symbol = dict(idle='○',alloc='●')
@@ -42,7 +43,53 @@ BASE_WIDTH= 68 # HORZ PIXELS PER NODE
 BASE_DEPTH= 62 # VERT PIXELS PER NODE 
 FONTSIZE  = 12
 
-def mig_disk(center=np.r_[0,0], radius=1, alloc_mig=[], max_mig=7, n=720):
+def mig_disk(mig_bounds=[0,1,2,3,4,5,6,7], alloc_mig=[], center=np.r_[0,0], radius=1, n=720):
+  """
+  DESCRIPTION
+  -----------
+  Draw a pie-graph representing Multi-Instance GPU (MIG) allocations on a GPU.
+
+  Essentially draws a circle with either filled or empty wedges, representing
+  allocated or idle MIGs.
+
+
+  INPUTS
+  ------
+  mig_bounds, list-like of int :: defines MIG structure with ints, for instance 
+  if GPU is divided into 12 equal pieces: mig_bounds=[0,1,...,12], where the 
+  last value must be defined in order to correctly allocate pie-slices. Another
+  example, suppose GPU is divided into 8 pieces, the first 4 twice as large
+  as the last 4, then mig_bounds=[0,2,4,6,8,9,10,11,12], where
+  - mig0 has bounds [0,2]
+  - mig1 has bounds [2,4]
+  - ...
+  - mig3 has bounds [6,8]
+  - mig4, the smaller class, has bounds [8,9]
+  - mig5, has bounds [9,10]
+  - ...
+  - mig7, has bounds [11,12]
+                                   
+
+  alloc_mig, list-like of int :: defines which of the MIG as defined by
+  `mig_bounds` should be marked as allocated (have their pie-wedge filled in).
+  For instance, if there are 8 MIG and the first and last are allocated, then
+  `alloc_mig=[0,7]`, following SLURM (and Python's) zero-indexing.
+    
+  center, len=2 array :: the origin of the drawn pie-graph
+  radius, scalar      :: the radius of the drawn pie-graph
+  n, integer          :: the number of points to draw the circle
+
+  OUTPUTS
+  -------
+  pdisk, string :: a raw string of draw-instructions and coordinates that
+  plotly infers to draw the pie-disk and the wedges.
+
+  psegs, string :: a raw string of draw-instructions and coordinates that 
+  plotly infers to draw the ALLOCATED pie-segments.
+  """
+  alloc_mig  = np.array(alloc_mig)
+  mig_bounds = np.array(mig_bounds)
+  max_mig = mig_bounds[-1]
   # Draw main GPU circle
   OX,OY = center
   th = np.linspace(0,1,n+1,dtype=np.float64)[:-1]*2*np.pi
@@ -52,13 +99,17 @@ def mig_disk(center=np.r_[0,0], radius=1, alloc_mig=[], max_mig=7, n=720):
     pdisk += f" L{xc[0]:6.3e},{xc[1]:6.3e}"
   pdisk += f" L{x[0,0]:6.3e},{x[0,1]:6.3e} Z"
   psegs = []
-  # Draw MIG segments
+  # Draw ALLOCATED MIG segments
   if len(alloc_mig) > 0:
+    # determine the starting (rads0) and ending (radsN) 
+    # radial bounds of all allocated MIG 
+    rads0 = mig_bounds[alloc_mig]/max_mig * 2 * np.pi
+    radsN = mig_bounds[alloc_mig+1]/max_mig * 2 * np.pi
     ori   = f'L{OX:6.3e},{OY:6.3e}'
-    rads0 = np.array(alloc_mig)/max_mig * 2 * np.pi
-    radsN = rads0 + 2*np.pi/max_mig
+    # compute cartesian coordinates from radial
     X0    = center+radius*np.c_[np.cos(rads0),np.sin(rads0)]
     XN    = center+radius*np.c_[np.cos(radsN),np.sin(radsN)]
+    # compute plotly strings with sufficient resolution
     for k in range(len(X0)):
       x0,y0 = X0[k]
       xN,yN = XN[k]
@@ -71,30 +122,66 @@ def mig_disk(center=np.r_[0,0], radius=1, alloc_mig=[], max_mig=7, n=720):
       psegs.append(pseg)
   return pdisk,psegs
 
-def get_gpu_str(rdf):
-  gpu_str = ''
+def get_gpu_info(rdf):
+  """
+  DESCRIPTION
+  -----------
+
+  From a pandas DataFrame row, build a dictionary of 
+  detected GPU types and their status.
+  """
+  gpu_info=dict()
   try:
-    if 'gpu' in rdf.GRES:
-      num_gpus  = int(rdf.GRES.split(':')[-1])
-      gpu_str   = list(num_gpus*gpu_status_symbol['idle'])
-      if rdf.gpu_index == rdf.GRES_USED:
-        gpu_alloc = int(rdf.GRES_USED.split(':')[-1])
-        for ell in range(gpu_alloc):
-          gpu_str[ell] = gpu_status_symbol['alloc']
-      elif 'IDX' in rdf.GRES_USED:
-        for ell in rdf.gpu_index.split(','):
+    for gpu_type in rdf.GRES_USED.split('gpu:')[1:]:
+      name,num_alloc,_,inds = re.split('[(:)]',gpu_type)[:-1]
+      num_alloc = int(num_alloc)
+      is_mig = True if re.match('[12]g.[12]0gb',name) else False
+      num = int(re.search(f'{name}:(\d+)',rdf.GRES).group(1))
+      gpu_str = list(num*gpu_status_symbol['idle'])
+      if num_alloc == num:
+        gpu_str = list(num*gpu_status_symbol['alloc'])
+      else:
+        for ell in inds.split(','):
           if '-' in ell:
             m,n = ell.split('-')
-            for k in range(int(m),int(n)+1):
+            m,n = int(m),int(n)
+            if is_mig:
+              m,n = m%num,n%num
+            for k in range(m,n+1):
               gpu_str[k] = gpu_status_symbol['alloc']
-          elif 'N/A' in ell:
+          elif ell == 'N/A':
             pass
           else:
-            gpu_str[int(ell)] = gpu_status_symbol['alloc']
+            k = int(ell)
+            if is_mig:
+              k %= num
+            gpu_str[k] = gpu_status_symbol['alloc']
+      gpu_info[name] = dict(
+        name      = name,
+        num       = num,
+        num_idle  = num-num_alloc,
+        num_alloc = num_alloc,
+        alloc_ind = inds,
+        gpu_str   = ''.join(gpu_str),
+        is_mig    = is_mig
+      )
   except Exception as ex:
     print('GPU string parsing exception: ', ex, rdf.GRES_USED)
-    gpu_str = ''
-  return ''.join(gpu_str)
+  return gpu_info
+  
+def get_gpu_summary(rdf):
+  gpu_summary=''
+  try:
+    if rdf.gpu_info != {}:
+      gpu_summary='<br> <b>GPUs</b>: '
+      for k,gpu in enumerate(rdf.gpu_info):
+        name,alloc,total = [ rdf.gpu_info[gpu][k] for k in 'name num_alloc num'.split() ]
+        if k > 0:
+          gpu_summary += ', '
+        gpu_summary += f'{name}:{alloc}/{total}'
+  except Exception as ex:
+    print('GPU Info parsing exception: ', ex, rdf.gpu_info)
+  return gpu_summary
 
 HOVERTEMPLATE = r"""<extra></extra>
 <b>%{customdata[0]}</b>            
@@ -228,13 +315,10 @@ df.loc[df['GRES']=='(null)','GRES_USED'] = ''
 df.loc[df['GRES']!='(null)','GRES'] = df.loc[df['GRES']!='(null)','GRES'].str.replace(r'(S:0-1)','',regex=False)
 
 df.loc[df['TIMESTAMP'] != 'Unknown','TIMESTAMP'] = '('+df.loc[df['TIMESTAMP']!='Unknown','TIMESTAMP']+') '
-df.loc[df['GRES'] != '(null)','SPECIAL'] = '<br> <b>GPUs</b>: ' \
-  + df.loc[df['GRES'] != '(null)','GRES_USED'].str.replace(r'\(IDX.*',' / ',regex=True).str.replace('gpu:','') \
-  + df.loc[df['GRES'] != '(null)','GRES'].str.replace(r'gpu:.*:','',regex=True)
 df.loc[df['REASON'] != 'none','SPECIAL'] += '<br> <b>Reason</b>: '+df.loc[df['REASON'] != 'none','TIMESTAMP']+df.loc[df['REASON'] != 'none','REASON']
 
-df['gpu_index']  = df['GRES_USED'].str.replace(r'\(S:*',' / ',regex=True).str.replace(r'.*IDX:|\)','',regex=True)
-df['gpu_str'] = df.apply(lambda x: get_gpu_str(x),axis=1)
+df['gpu_info'] = df.apply(lambda x: get_gpu_info(x),axis=1)
+df['SPECIAL']  = df.apply(lambda x: get_gpu_summary(x),axis=1)
 
 df = df.groupby('NODELIST').agg(AGG_DICT).reset_index()
 L  = len(df)
@@ -243,7 +327,7 @@ M  = int(L/N+1)
 df['x'] = df.apply(lambda x: x.name//M,axis=1)
 df['y'] = df.apply(lambda x: x.name%M, axis=1)
 
-gdf = df.loc[df['gpu_str']!='',['x','y','gpu_str','STATE']]
+gdf = df.loc[df['gpu_info']!={},['x','y','gpu_info','STATE']]
 
 fig = px.scatter(df,**SCATTER_OPTS)
 fig.layout.xaxis['visible'] = False
@@ -258,27 +342,48 @@ fig.update_traces(**TRACE_OPTS)
 pshapes = []
 for i,r in gdf.iterrows():
   c = STATE_TEXTFONT_COLOR_MAP[r.STATE]
-  # TODO: make more flexible -- this is hard coded for 4 A100s split
-  # into 7 MIG slices each (28 total MIG instances).
-  if len(r.gpu_str) == 28:
+  # TODO: make more flexible 
+  if len(r.gpu_info) > 1:
     gpus_alloc = [[],[],[],[]]
-    for k,status in enumerate(r.gpu_str):
+    g2sm20g = r.gpu_info['2g.20gb']
+    g1sm20g = r.gpu_info['1g.20gb']
+    for k,status in enumerate(g2sm20g['gpu_str']):
       if status == gpu_status_symbol['alloc']:
-        gpu_num = k//7
-        gpu_ind = k%7
-        gpus_alloc[gpu_num].append(gpu_ind)
-    for k in range(4):
-      pdisk,psegs = mig_disk(center=np.r_[r.x-0.32+k*0.21,r.y-0.32], radius=0.095, alloc_mig=gpus_alloc[k], max_mig=7, n=101)
+        gpu_index      = k//3
+        gpu_sub_index  = k%3
+        gpus_alloc[gpu_index].append(gpu_sub_index)
+    for k,status in enumerate(g1sm20g['gpu_str']):
+      if status == gpu_status_symbol['alloc']:
+        gpu_index      = k
+        gpu_sub_index  = 3
+        gpus_alloc[k].append(gpu_sub_index)
+    for k in range(len(gpus_alloc)):
+      pdisk,psegs = mig_disk(center=np.r_[r.x-0.32+k*0.21,r.y-0.32], radius=0.095, alloc_mig=gpus_alloc[k], mig_bounds=[0,2,4,6,7], n=101)
       pshapes.append(dict(type="path",path=pdisk,line_color=c,line=dict(width=1.2)))
       for pseg in psegs:
         pshapes.append(
           dict(type="path",path=pseg,fillcolor=c,line_color=c,line=dict(width=0))
         )
   else:
+    name = list(r.gpu_info.keys())[0]
+    gpu_info= r.gpu_info[name]
+    gpu_str = gpu_info['gpu_str'] 
+    if len(gpu_str) == 8:
+      fig.add_annotation(
+        x=r.x-0.45,
+        y=r.y-0.04,
+        text=gpu_str[:4],
+        showarrow=False,
+        xanchor='left',
+        yanchor='top',
+        font=dict(size=FONTSIZE,color=c),
+      )
+      gpu_str = gpu_str[4:]
+
     fig.add_annotation(
       x=r.x-0.45,
       y=r.y-0.16,
-      text=r.gpu_str,
+      text=gpu_str,
       showarrow=False,
       xanchor='left',
       yanchor='top',

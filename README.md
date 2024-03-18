@@ -97,6 +97,7 @@ Changes
 
  Version | Date       | Notes
 :-------:|:----------:|:-------------------------------------------------------
+<<<<<<< HEAD
  CURRENT | 2023-12-28 | version 0.9.1
    0.9.1 | 2023-12-28 | Fixed minor bug in job stats when a cluster is jobless
    0.9   | 2023-12-01 | Improved sinfo state support
@@ -110,6 +111,23 @@ Changes
    0.1   | 2022-11-09 | Automated version available on rcstatus.asu.edu
    0.0   | 2022-11-03 | Proof of concept
 
+=======
+ CURRENT | 2024-03-18 | version 0.10.1
+ 0.10.1  | 2024-03-18 | Added docstring to MIG-disk method
+ 0.10    | 2024-03-07 | GPU string creation fixed for multiple gpus on node
+ 0.9.1   | 2023-12-28 | Initialized stats array in bin/local-sq-stats
+ 0.9     | 2023-12-01 | Improved sinfo state support
+ 0.8     | 2023-05-01 | MIG support 
+ 0.7     | 2023-02-03 | NHC support (escaping quotes in node status REASON)
+ 0.6     | 2023-01-15 | GRES socket info bug, due to new `sinfo` reporting
+ 0.5     | 2023-01-06 | GRES length bug fix (`sinfo` fields require spec. width)
+ 0.4     | 2022-11-23 | GPU Index bug fix
+ 0.3     | 2022-11-21 | Resized and queue summary statistics added
+ 0.2     | 2022-11-10 | GPU support
+ 0.1     | 2022-11-09 | Automated version available on rcstatus.asu.edu
+ 0.0     | 2022-11-03 | Proof of concept
+        
+>>>>>>> aaf0694 (v0.10.1 release)
 
 
 
