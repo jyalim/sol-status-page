@@ -9,15 +9,12 @@ squeue -rS "P,t,-p" -O "${sq_fmt_str}" "$@" \
     } 
     return q
   } 
-<<<<<<< HEAD
   BEGIN {
     s["R"]=0
     s["PD"]=0
-=======
   BEGIN { 
     s["R"]  = 0
     s["PD"] = 0
->>>>>>> aaf0694 (v0.10.1 release)
   }
   NR > 1 { 
     user=$2
