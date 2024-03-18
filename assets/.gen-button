@@ -1,0 +1,1 @@
+convert view-demo.png -fuzz 15% -transparent white -fuzz 50% -fill '#FFC627' -opaque cyan -fuzz 30% -fill #806313 -opaque '#aaaaaa' button.png
