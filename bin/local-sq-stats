@@ -9,9 +9,6 @@ squeue -rS "P,t,-p" -O "${sq_fmt_str}" "$@" \
     } 
     return q
   } 
-  BEGIN {
-    s["R"]=0
-    s["PD"]=0
   BEGIN { 
     s["R"]  = 0
     s["PD"] = 0
